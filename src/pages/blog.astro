@@ -1,20 +1,53 @@
 ---
+import { getCollection } from 'astro:content';
+
+// 拉取所有博客文章并按时间倒序
+const posts = await getCollection('blog');
+posts.sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf());
 ---
 
 <html lang="zh-cn">
   <head>
     <meta charset="utf-8" />
-    <link rel="icon" type ="image/svg+xml" href="/favicon.svg" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <meta name="viewport" content="width=device-width" />
-    <meta name="generator" content = {Astro.generator} >
-    <title>Astro</title>
+    <meta name="generator" content={Astro.generator} />
+    <title>博客列表 - Astro 学习之旅</title>
+    <style>
+      nav a {
+        margin-right: 1rem;
+        text-decoration: none;
+        font-weight: bold;
+      }
+      ul { list-style: none; padding: 0; }
+      li { margin: 0.5rem 0; }
+    </style>
   </head>
+
   <body>
-    <a href="/">首页</a>
-    <a href="/about/">关于</a>
-    <a href="/blog/">博客</a>
+    <!-- 导航栏 -->
+    <nav>
+      <a href="/">首页</a>
+      <a href="/about/">关于</a>
+      <a href="/blog/">博客</a>
+    </nav>
+
     <h1>我的博客</h1>
-    <p>我正在学习 Astro 的入门教程。这是我的博客页面</p>
+    <p>我正在学习 Astro 的入门教程。这是我的博客页面。</p>
     <p>在这里，我将分享我的 Astro 学习之旅。</p>
+
+    {posts.length === 0 && <p>暂无文章，快去 src/pages/blog/ 新建第一篇 Typst 博客吧！</p>}
+
+    <!-- 文章列表：标题 + 日期 + “阅读全文”按钮 -->
+    <ul>
+      {posts.map(post => (
+        <li>
+          <h2>{post.data.title}</h2>
+          <time>{post.data.date.toLocaleDateString()}</time>
+          <br />
+          <a href={`/blog/${post.id}/`}>阅读全文 →</a>
+        </li>
+      ))}
+    </ul>
   </body>
 </html>
