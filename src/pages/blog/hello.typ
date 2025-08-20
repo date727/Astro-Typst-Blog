@@ -13,7 +13,7 @@
   )
 )<frontmatter>
 
-= Hello Typst in Astro
+= title
 
 这是正文。下面是一段数学公式：
 
