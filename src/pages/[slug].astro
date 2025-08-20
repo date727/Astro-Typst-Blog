@@ -1,27 +1,35 @@
 ---
-import Layout from '../layouts/Layout.astro';
-import Giscus from '../components/Giscus.astro';
-import { getCollection } from 'astro:content';
+import { getCollection, render } from 'astro:content';
 
+/* 1. 在构建时告诉 Astro 有哪些文章要生成 */
 export async function getStaticPaths() {
   const posts = await getCollection('blog');
-  return posts.map(p => ({
-    params: { slug: p.id.replace(/\.\w+$/, '') },
-    props: { post: p },
+  return posts.map((post) => ({
+    params: { slug: post.id },   // 匹配 /blog/文章id/
+    props: { post },
   }));
 }
 
+/* 2. 拿到当前这篇文章 */
 const { post } = Astro.props;
-const { Content } = await post.render();
+const { Content } = await render(post);
 ---
 
-<Layout title={post.data.title}>
-  <article>
-    <h1>{post.data.title}</h1>
-    <p><time>{post.data.date.toISOString().slice(0,10)}</time></p>
-    <Content />
-  </article>
+<html lang="zh-cn">
+  <head>
+    <meta charset="utf-8" />
+    <title>{post.data.title}</title>
+  </head>
+  <body>
+    <nav>
+      <a href="/">首页</a>
+      <a href="/blog/">← 返回列表</a>
+    </nav>
 
-  <!-- 评论区 -->
-  <Giscus />
-</Layout>
+    <article>
+      <h1>{post.data.title}</h1>
+      <time>{post.data.date.toLocaleDateString()}</time>
+      <Content />
+    </article>
+  </body>
+</html>
