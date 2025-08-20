@@ -9,6 +9,9 @@ export default defineConfig({
       options: {
         remPx: 14,
       },
+      fontArgs: [
+        { fontPaths: ['./fonts'] }
+      ],
       target: (id) => {
         if (id.endsWith('.html.typ') || id.includes('/html/')) return "html";
         return "svg";

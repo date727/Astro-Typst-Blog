@@ -1,5 +1,10 @@
 #import "@preview/oxifmt:0.2.0": strfmt   // 随便用包
 
+#set text(
+  font: ("FangSong_GB2312"),
+  lang: "zh"
+)
+
 #metadata(
   (
     title: "Hello Typst in Astro",
