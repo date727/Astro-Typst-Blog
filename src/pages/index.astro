@@ -1,19 +1,8 @@
 ---
+import Layout from '../layouts/Layout.astro';
 ---
 
-<html lang="zh-cn">
-  <head>
-    <meta charset="utf-8" />
-    <link rel="icon" type ="image/svg+xml" href="/favicon.svg" />
-    <meta name="viewport" content="width=device-width" />
-    <meta name="generator" content = {Astro.generator} >
-    <title>Astro</title>
-  </head>
-  <body>
-    <a href="/">首页</a>
-    <a href="/about/">关于</a>
-	  <a href="/blog/">博客</a>
-    <a href="/comments">评论</a>
-    <h1>The fantastic collaboration between Astro and Typst</h1>
-  </body>
-</html>
+<Layout>
+  <h1 slot="title">Astro</h1>
+  <h1>The fantastic collaboration between Astro and Typst</h1>
+</Layout>

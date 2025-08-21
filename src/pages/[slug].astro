@@ -1,5 +1,6 @@
 ---
 import { getCollection, render } from 'astro:content';
+import Layout from '../layouts/Layout.astro';
 
 export async function getStaticPaths() {
   const posts = await getCollection('blog');
@@ -14,21 +15,16 @@ const { post } = Astro.props;
 const { Content } = await render(post);
 ---
 
-<html lang="zh-cn">
-  <head>
-    <meta charset="utf-8" />
-    <title>{post.data.title}</title>
-  </head>
-  <body>
-    <nav>
-      <a href="/">首页</a>
-      <a href="/blog/">← 返回列表</a>
-    </nav>
+<Layout>
+  <h1 slot="title">{post.data.title}</h1>
+  <nav>
+    <a href="/">首页</a>
+    <a href="/blog/">← 返回列表</a>
+  </nav>
 
-    <article>
-      <h1>{post.data.title}</h1>
-      <time>{post.data.date.toLocaleDateString()}</time>
-      <Content />
-    </article>
-  </body>
-</html>
+  <article>
+    <h1>{post.data.title}</h1>
+    <time>{post.data.date.toLocaleDateString()}</time>
+    <Content />
+  </article>
+</Layout>
