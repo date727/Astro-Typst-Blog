@@ -1,8 +1,6 @@
 ---
 import { getCollection, render } from 'astro:content';
-import Giscus from '../components/Giscus.astro';
 
-/* 1. 在构建时告诉 Astro 有哪些文章要生成 */
 export async function getStaticPaths() {
   const posts = await getCollection('blog');
   return posts.map((post) => ({
@@ -32,6 +30,5 @@ const { Content } = await render(post);
       <time>{post.data.date.toLocaleDateString()}</time>
       <Content />
     </article>
-    <Giscus />
   </body>
 </html>
