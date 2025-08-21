@@ -21,10 +21,10 @@ import '@fontsource/jetbrains-mono';
                 visibility: hidden;
             }
             /* 字体加载完成后显示内容并添加平滑动画 */
-            .font-loaded {
-                visibility: visible;
-                animation: smoothFade 0.1s ease-in-out;
-            }
+			.font-loaded {
+				visibility: visible;
+				animation: smoothFade 0.3s ease-in-out;
+			}
             @keyframes smoothFade {
                 from { 
                     opacity: 0;
@@ -46,7 +46,6 @@ import '@fontsource/jetbrains-mono';
 				font-weight: bold;
 				color: #333;
 			}
-
 			main {
 				padding: 2rem;
 				max-width: 800px;
@@ -58,36 +57,13 @@ import '@fontsource/jetbrains-mono';
 		<script>
 			// 检测字体加载完成
 			(function() {
-				// 创建一个使用JetBrains Mono字体的元素
-				const testElement = document.createElement('span');
-				testElement.style.fontFamily = 'JetBrains Mono';
-				testElement.style.position = 'absolute';
-				testElement.style.visibility = 'hidden';
-				testElement.textContent = 'test';
-				
-				document.body.appendChild(testElement);
-				
-				// 检查字体是否已加载
-				function checkFontLoaded() {
-					// 使用FontFace API检测字体加载状态
-					if (document.fonts) {
-						// 检查JetBrains Mono字体是否加载完成
-						document.fonts.load('16px JetBrains Mono').then(function() {
-							// 字体加载完成后，移除font-loading类并添加font-loaded类
-							document.body.classList.remove('font-loading');
-							document.body.classList.add('font-loaded');
-						});
-					} else {
-						// 如果浏览器不支持FontFace API，设置一个延迟后显示内容
-						setTimeout(function() {
-							document.body.classList.remove('font-loading');
-							document.body.classList.add('font-loaded');
-						}, 100);
+				setTimeout(function() {
+					const bodyElement = document.body;
+					if (bodyElement) {
+						bodyElement.classList.remove('font-loading');
+						bodyElement.classList.add('font-loaded');
 					}
-				}
-				
-				// 执行检查
-				checkFontLoaded();
+				}, 0);
 			})();
 		</script>
 		<nav>
