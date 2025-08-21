@@ -57,13 +57,20 @@ import '@fontsource/jetbrains-mono';
 		<script>
 			// 检测字体加载完成
 			(function() {
-				setTimeout(function() {
-					const bodyElement = document.body;
-					if (bodyElement) {
-						bodyElement.classList.remove('font-loading');
-						bodyElement.classList.add('font-loaded');
-					}
-				}, 0);
+				// 检查浏览器是否支持FontFaceSet API
+				if (document.fonts) {
+					// 等待指定字体加载完成
+					document.fonts.load('1em "JetBrains Mono"').then(() => {
+						document.body.classList.replace('font-loading', 'font-loaded');
+					}).catch(() => {
+						// 字体加载失败时的降级处理
+						console.warn('字体加载失败，使用默认样式');
+						document.body.classList.replace('font-loading', 'font-loaded');
+					});
+				} else {
+					// 不支持FontFaceSet的浏览器直接切换状态
+					document.body.classList.replace('font-loading', 'font-loaded');
+				}
 			})();
 		</script>
 		<nav>
@@ -77,3 +84,4 @@ import '@fontsource/jetbrains-mono';
 		</main>
 	</body>
 </html>
+    
