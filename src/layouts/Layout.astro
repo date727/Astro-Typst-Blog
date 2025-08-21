@@ -1,5 +1,4 @@
 ---
-import '@fontsource/jetbrains-mono';
 ---
 
 <!doctype html>
@@ -10,29 +9,33 @@ import '@fontsource/jetbrains-mono';
 		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
 		<meta name="generator" content={Astro.generator} />
 		<title><slot name="title" /></title>
+
+		<!-- 预加载TTF字体 -->
+		<link 
+			rel="preload" 
+			href="/fonts/consola-1.ttf"
+			as="font" 
+			type="font/ttf" 
+			crossorigin 
+		/>
+
 		<style>
+			/* 声明自定义字体，关联TTF文件 */
+			@font-face {
+				font-family: 'MyConsola'; /* 自定义名称，避免冲突 */
+				src: url('/fonts/consola-1.ttf') format('truetype'); /* 仅使用TTF格式 */
+				font-weight: normal; /* 根据实际字体权重设置 */
+				font-style: normal;
+				font-display: swap; /* 优化加载体验：加载时显示默认字体，完成后切换 */
+			}
+
 			body {
 				margin: 0;
 				background-color: #fafaf0;
-				font-family: 'JetBrains Mono', monospace;
+				/* 优先使用自定义字体， fallback到系统字体 */
+				font-family: 'MyConsola', Consolas, 'Courier New', monospace;
 			}
-			/* 字体加载完成前隐藏内容 */
-            .font-loading {
-                visibility: hidden;
-            }
-            /* 字体加载完成后显示内容并添加平滑动画 */
-			.font-loaded {
-				visibility: visible;
-				animation: smoothFade 0.3s ease-in-out;
-			}
-            @keyframes smoothFade {
-                from { 
-                    opacity: 0;
-                }
-                to { 
-                    opacity: 1;
-                }
-            }
+
 			nav {
 				padding: 1.5rem 1rem;
 				max-width: 800px;
@@ -53,26 +56,7 @@ import '@fontsource/jetbrains-mono';
 			}
 		</style>
 	</head>
-	<body class="font-loading">
-		<script>
-			// 检测字体加载完成
-			(function() {
-				// 检查浏览器是否支持FontFaceSet API
-				if (document.fonts) {
-					// 等待指定字体加载完成
-					document.fonts.load('1em "JetBrains Mono"').then(() => {
-						document.body.classList.replace('font-loading', 'font-loaded');
-					}).catch(() => {
-						// 字体加载失败时的降级处理
-						console.warn('字体加载失败，使用默认样式');
-						document.body.classList.replace('font-loading', 'font-loaded');
-					});
-				} else {
-					// 不支持FontFaceSet的浏览器直接切换状态
-					document.body.classList.replace('font-loading', 'font-loaded');
-				}
-			})();
-		</script>
+	<body>
 		<nav>
 			<a href="/">Home</a>
 			<a href="/about/">About</a>
@@ -84,4 +68,3 @@ import '@fontsource/jetbrains-mono';
 		</main>
 	</body>
 </html>
-    
