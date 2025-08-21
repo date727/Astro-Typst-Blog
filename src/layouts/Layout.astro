@@ -7,13 +7,22 @@
 		<meta name="generator" content={Astro.generator} />
 		<title><slot name="title" /></title>
 		<style>
+			@font-face {
+				font-family: 'Consola';
+				src: url('/fonts/consola-1.ttf') format('truetype');
+			}
+
 			body {
 				margin: 0;
-				background-color: #f5f5dc; /* 浅米色 */
-				font-family: sans-serif;
+				background-color: #fafaf0;
+				font-family: 'Consola', sans-serif;
 			}
 			nav {
-				padding: 1rem;
+				padding: 1.5rem 1rem;
+				max-width: 800px;
+				margin: 0 auto;
+				text-align: right;
+				border-bottom: 1px solid rgb(0, 128, 128);
 			}
 			nav a {
 				margin-right: 1rem;
@@ -24,17 +33,17 @@
 
 			main {
 				padding: 2rem;
-				max-width: 1200px;
+				max-width: 800px;
 				margin: 0 auto;
 			}
 		</style>
 	</head>
 	<body>
 		<nav>
-			<a href="/">首页</a>
-			<a href="/about/">关于</a>
-			<a href="/blog/">博客</a>
-			<a href="/comments">评论</a>
+			<a href="/">Home</a>
+			<a href="/about/">About</a>
+			<a href="/blog/">Blog</a>
+			<a href="/comments">Comment</a>
 		</nav>
 		<main>
 			<slot />
