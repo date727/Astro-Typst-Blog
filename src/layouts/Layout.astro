@@ -7,7 +7,7 @@
 		<meta name="generator" content={Astro.generator} />
 		<title><slot name="title" /></title>
 
-		<!-- 预加载字体 -->
+		<!-- 保留字体预加载 -->
 		<link 
 			rel="preload" 
 			href="/fonts/consola-1.woff2"
@@ -28,23 +28,22 @@
 			/* 基础样式与动画变量 */
 			:root {
 				--transition-speed: 0.3s;
-				--content-delay: 0.1s; /* 内容动画延迟，增强层次感 */
+				--content-delay: 0.1s;
 			}
 
 			body {
 				margin: 0;
 				background-color: #fafaf0;
-				font-family: Consolas, monospace;
+				/* 直接使用目标字体，预加载会提升加载速度 */
+				font-family: 'MyConsola', Consolas, monospace;
 			}
 
-			/* 导航栏保持固定，不参与动画 */
 			nav {
 				padding: 1.5rem 1rem;
 				max-width: 800px;
 				margin: 0 auto;
 				text-align: right;
 				border-bottom: 1px solid rgb(0, 128, 128);
-				/* 固定导航栏样式，避免页面切换时晃动 */
 				position: relative;
 				z-index: 10;
 			}
@@ -56,39 +55,28 @@
 				color: #333;
 			}
 
-			/* 主内容区域动画容器 */
-			.content-wrapper {
-				/* 字体切换过渡 */
-				font-family: Consolas, monospace;
-				transition: font-family var(--transition-speed) step-end;
-			}
-
 			/* 主内容动态效果 */
 			main {
 				padding: 2rem;
 				max-width: 800px;
 				margin: 0 auto;
-				/* 内容初始状态 */
+				/* 初始隐藏状态 */
 				opacity: 0;
 				transform: translateY(10px);
+				/* 动画过渡 */
 				transition: 
 					opacity var(--transition-speed) ease,
 					transform var(--transition-speed) ease;
 				transition-delay: var(--content-delay);
 			}
 
-			/* 字体加载完成后状态 */
-			.font-loaded {
-				font-family: 'MyConsola', Consolas, monospace;
-			}
-
-			/* 内容加载完成动画 */
-			.font-loaded main {
+			/* 页面加载完成后显示内容的状态 */
+			.page-loaded main {
 				opacity: 1;
 				transform: translateY(0);
 			}
 
-			/* 页面切换时的临时状态（可配合前端路由使用） */
+			/* 页面切换时的动画状态 */
 			.page-transition main {
 				opacity: 0;
 				transform: translateY(10px);
@@ -96,7 +84,6 @@
 		</style>
 	</head>
 	<body>
-		<!-- 导航栏保持固定，不参与动画 -->
 		<nav>
 			<a href="/">Home</a>
 			<a href="/about/">About</a>
@@ -104,39 +91,30 @@
 			<a href="/comments">Comment</a>
 		</nav>
 
-		<!-- 内容区域包裹器，用于字体切换 -->
-		<div class="content-wrapper">
-			<!-- 主内容区域，仅这里有动画 -->
-			<main>
-				<slot />
-			</main>
-		</div>
+		<main>
+			<slot />
+		</main>
 
 		<script>
-			// 检测字体加载完成后触发内容动画
+			// 页面加载完成后直接触发内容动画（不依赖字体加载检测）
 			(function() {
-				// 添加字体加载完成状态
-				function activateFont() {
-					document.body.classList.add('font-loaded');
-					document.querySelector('.content-wrapper').classList.add('font-loaded');
-				}
+				// 页面DOM加载完成后触发
+				document.addEventListener('DOMContentLoaded', () => {
+					// 立即添加页面加载完成类，触发内容动画
+					document.body.classList.add('page-loaded');
+				});
 
-				if (document.fonts) {
-					// 精确等待自定义字体加载
-					document.fonts.load('1em "MyConsola"').then(activateFont).catch(activateFont);
-				} else {
-					// 降级方案：延迟触发动画
-					setTimeout(activateFont, 300);
-				}
-
-				// 页面切换动画（如果使用前端路由，可在这里监听路由变化）
+				// 页面切换动画逻辑
 				document.querySelectorAll('nav a').forEach(link => {
 					link.addEventListener('click', function(e) {
-						// 模拟页面切换前的动画（实际项目中需配合路由拦截）
+						// 添加入场动画状态
+						document.body.classList.remove('page-loaded');
 						document.body.classList.add('page-transition');
+						
 						// 延迟跳转，等待动画完成
 						setTimeout(() => {
 							document.body.classList.remove('page-transition');
+							// 实际项目中这里会是路由跳转逻辑
 						}, 300);
 					});
 				});
