@@ -1,6 +1,3 @@
----
----
-
 <!doctype html>
 <html lang="zh-cn">
 	<head>
@@ -10,30 +7,29 @@
 		<meta name="generator" content={Astro.generator} />
 		<title><slot name="title" /></title>
 
-		<!-- 预加载TTF字体 -->
+		<!-- 1. 预加载字体（优先加载关键字体文件） -->
 		<link 
 			rel="preload" 
-			href="/fonts/consola-1.ttf"
+			href="/fonts/consola-1.woff2"
 			as="font" 
-			type="font/ttf" 
+			type="font/woff2" 
 			crossorigin 
 		/>
 
 		<style>
-			/* 声明自定义字体，关联TTF文件 */
+			/* 2. 声明自定义字体，关联文件与名称 */
 			@font-face {
-				font-family: 'MyConsola'; /* 自定义名称，避免冲突 */
-				src: url('/fonts/consola-1.ttf') format('truetype'); /* 仅使用TTF格式 */
-				font-weight: normal; /* 根据实际字体权重设置 */
+				font-family: 'MyConsola'; /* 自定义名称，避免与系统字体冲突 */
+				src: url('/fonts/consola-1.woff2') format('woff2'),  /* 现代浏览器优先 */
+					 url('/fonts/consola-1.ttf') format('truetype'); /* 降级格式 */
+				font-weight: normal; /* 根据实际字体设置 */
 				font-style: normal;
-				font-display: swap; /* 优化加载体验：加载时显示默认字体，完成后切换 */
 			}
 
 			body {
 				margin: 0;
 				background-color: #fafaf0;
-				/* 优先使用自定义字体， fallback到系统字体 */
-				font-family: 'MyConsola', Consolas, 'Courier New', monospace;
+				font-family: 'MyConsola', Consolas, monospace; /* 优先级：自定义字体 > 系统Consolas > 通用等宽字体 */
 			}
 
 			nav {
