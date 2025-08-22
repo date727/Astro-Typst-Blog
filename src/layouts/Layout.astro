@@ -7,7 +7,7 @@
 		<meta name="generator" content={Astro.generator} />
 		<title><slot name="title" /></title>
 
-		<!-- 全局字体预加载 -->
+		<!-- 字体预加载 - 使用woff2格式以获得最佳性能 -->
 		<link 
 			rel="preload" 
 			href="/fonts/consola-1.woff2"
@@ -17,43 +17,30 @@
 		/>
 
 		<style>
-			/* 全局字体声明 - 使用block策略确保字体加载前不显示内容 */
+			/* 字体声明 - 使用swap策略确保内容立即可见 */
 			@font-face {
 				font-family: 'MyConsola';
 				src: url('/fonts/consola-1.woff2') format('woff2');
 				font-weight: normal;
 				font-style: normal;
-				font-display: block; /* 关键修改：使用block策略 */
+				font-display: swap; /* 关键：使用swap策略避免阻塞 */
+				font-stretch: normal;
+				unicode-range: U+000-5FF; /* 优化字符范围 */
 			}
 
-			/* 基础样式与动画变量 */
+			/* 基础样式设置 */
 			:root {
-				--transition-speed: 0.3s;
-				--content-delay: 0.1s;
+				--transition-speed: 0.25s;
+				--content-delay: 0.05s;
+				--font-fallback: 'Courier New', 'Monaco', monospace;
 			}
 
 			body {
 				margin: 0;
 				background-color: #fafaf0;
-				/* 使用单一字体，避免字体栈切换 */
-				font-family: 'MyConsola', monospace;
-				/* 移除visibility隐藏，让内容始终可见 */
-			}
-
-			/* 字体加载期间的占位样式 */
-			.font-loading body {
-				/* 使用与目标字体相似的度量标准 */
-				font-family: 'Courier New', monospace;
-				/* 添加轻微的透明度过渡 */
-				opacity: 0.95;
-			}
-
-			/* 字体加载完成后的最终样式 */
-			.font-loaded body {
-				font-family: 'MyConsola', monospace;
+				font-family: 'MyConsola', var(--font-fallback);
+				visibility: visible;
 				opacity: 1;
-				/* 平滑过渡效果 */
-				transition: opacity 0.2s ease-in-out;
 			}
 
 			nav {
@@ -71,63 +58,81 @@
 				text-decoration: none;
 				font-weight: bold;
 				color: #333;
+				transition: color 0.2s ease;
+				font-family: inherit;
 			}
 
-			/* 主内容动态效果 */
+			nav a:hover {
+				color: rgb(0, 128, 128);
+			}
+
+			/* 主内容区域样式 */
 			main {
 				padding: 2rem;
 				max-width: 800px;
 				margin: 0 auto;
 				/* 初始状态 */
 				opacity: 0;
-				transform: translateY(10px);
-				/* 动画过渡 */
+				transform: translateY(8px);
+				/* 平滑过渡 */
 				transition: 
-					opacity var(--transition-speed) ease,
-					transform var(--transition-speed) ease;
+					opacity var(--transition-speed) cubic-bezier(0.4, 0, 0.2, 1),
+					transform var(--transition-speed) cubic-bezier(0.4, 0, 0.2, 1);
 				transition-delay: var(--content-delay);
+				/* 使用后备字体直到自定义字体加载完成 */
+				font-family: var(--font-fallback);
 			}
 
-			/* 页面加载完成后显示内容 */
-			.page-loaded main {
+			/* 页面内容显示状态 */
+			.content-visible main {
 				opacity: 1;
 				transform: translateY(0);
+				/* 字体加载完成后应用自定义字体 */
+				font-family: 'MyConsola', var(--font-fallback);
 			}
 
-			/* 页面切换时的动画状态 */
-			.page-transition main {
+			/* 页面切换时的过渡状态 */
+			.page-transitioning main {
 				opacity: 0;
-				transform: translateY(10px);
+				transform: translateY(-8px);
 			}
 
-			/* 字体加载指示器（可选） */
-			.font-indicator {
+			/* 字体加载状态指示器（可选） */
+			.font-status {
 				position: fixed;
-				top: 10px;
-				right: 10px;
-				width: 8px;
-				height: 8px;
-				background-color: #ff6b6b;
+				top: 12px;
+				right: 12px;
+				width: 6px;
+				height: 6px;
 				border-radius: 50%;
-				opacity: 0;
-				transition: opacity 0.3s ease;
+				background-color: #e0e0e0;
+				transition: all 0.3s ease;
 				z-index: 1000;
 			}
 
-			.font-loading .font-indicator {
-				opacity: 1;
+			.font-status.loading {
+				background-color: #ff9800;
+				box-shadow: 0 0 8px rgba(255, 152, 0, 0.6);
 			}
 
-			.font-loaded .font-indicator {
-				background-color: #51cf66;
-				opacity: 0;
-				transition: opacity 0.3s ease 0.5s;
+			.font-status.loaded {
+				background-color: #4caf50;
+				box-shadow: 0 0 8px rgba(76, 175, 80, 0.6);
+			}
+
+			/* 优化字体加载体验 */
+			@supports (font-display: swap) {
+				body {
+					/* 现代浏览器优化 */
+					font-synthesis: none;
+					text-rendering: optimizeLegibility;
+				}
 			}
 		</style>
 	</head>
-	<body class="font-loading">
-		<!-- 字体加载指示器 -->
-		<div class="font-indicator"></div>
+	<body>
+		<!-- 字体状态指示器 -->
+		<div class="font-status loading"></div>
 		
 		<nav>
 			<a href="/">Home</a>
@@ -141,108 +146,117 @@
 		</main>
 
 		<script>
-			// 优化的字体加载管理器
-			const FontManager = {
-				isFontLoaded: false,
-				loadPromise: null,
-				
-				// 检查字体是否已加载
-				checkFontLoaded() {
-					if (this.isFontLoaded) return Promise.resolve();
-					
-					if (!this.loadPromise) {
-						this.loadPromise = new Promise((resolve) => {
-							// 检查浏览器是否支持 FontFace API
-							if (document.fonts && 'load' in document.fonts) {
-								// 使用document.fonts.load方法检查字体
-								document.fonts.load('1em MyConsola').then(() => {
-									this.isFontLoaded = true;
-									this.updateFontState();
-									resolve();
-								}).catch(() => {
-									// 字体加载失败，仍然标记为已加载
-									console.warn('字体加载失败，使用后备字体');
-									this.isFontLoaded = true;
-									this.updateFontState();
-									resolve();
-								});
-							} else {
-								// 不支持 FontFace API 的浏览器
-								setTimeout(() => {
-									this.isFontLoaded = true;
-									this.updateFontState();
-									resolve();
-								}, 50); // 减少延迟时间
-							}
-						});
-					}
-					
-					return this.loadPromise;
-				},
-
-				// 更新字体状态
-				updateFontState() {
-					// 移除加载状态类，添加完成状态类
-					document.documentElement.classList.remove('font-loading');
-					document.documentElement.classList.add('font-loaded');
-					
-					// 触发页面内容动画
-					if (window.PageManager) {
-						window.PageManager.triggerContentAnimation();
-					}
-				}
-			};
-
-			// 页面加载和切换管理器
-			const PageManager = {
-				contentAnimationTriggered: false,
+			// 优化的字体和页面管理器
+			const AppManager = {
+				fontLoaded: false,
+				contentVisible: false,
 				
 				init() {
-					// 将PageManager暴露到全局作用域
-					window.PageManager = this;
+					// 立即显示内容，使用后备字体
+					this.showContent();
 					
-					// 初始化字体加载
-					FontManager.checkFontLoaded().then(() => {
-						// 字体加载完成后设置页面过渡
-						this.setupPageTransitions();
-					});
+					// 异步加载自定义字体
+					this.loadCustomFont();
+					
+					// 设置页面导航
+					this.setupNavigation();
 				},
 				
-				// 触发内容动画
-				triggerContentAnimation() {
-					if (!this.contentAnimationTriggered) {
-						this.contentAnimationTriggered = true;
-						document.body.classList.add('page-loaded');
+				// 立即显示内容
+				showContent() {
+					if (!this.contentVisible) {
+						this.contentVisible = true;
+						document.body.classList.add('content-visible');
 					}
 				},
 				
-				setupPageTransitions() {
-					// 页面DOM加载完成后检查是否需要触发动画
-					document.addEventListener('DOMContentLoaded', () => {
-						// 如果字体已经加载，立即触发内容动画
-						if (FontManager.isFontLoaded) {
-							this.triggerContentAnimation();
-						}
-					});
-					
-					// 设置页面切换过渡
-					document.querySelectorAll('nav a').forEach(link => {
-						link.addEventListener('click', (e) => {
-							// 执行页面切换动画
-							document.body.classList.remove('page-loaded');
-							document.body.classList.add('page-transition');
+				// 加载自定义字体
+				async loadCustomFont() {
+					try {
+						// 使用FontFace API进行精确控制
+						if ('fonts' in document) {
+							const font = new FontFace(
+								'MyConsola',
+								'url(/fonts/consola-1.woff2)',
+								{ display: 'swap' }
+							);
 							
-							// 确保过渡动画完成
+							await font.load();
+							document.fonts.add(font);
+							
+							// 字体加载完成
+							this.onFontLoaded();
+						} else {
+							// 降级处理
+							setTimeout(() => this.onFontLoaded(), 100);
+						}
+					} catch (error) {
+						console.warn('字体加载失败:', error);
+						this.onFontLoaded(); // 继续执行
+					}
+				},
+				
+				// 字体加载完成处理
+				onFontLoaded() {
+					this.fontLoaded = true;
+					
+					// 更新状态指示器
+					const indicator = document.querySelector('.font-status');
+					if (indicator) {
+						indicator.classList.remove('loading');
+						indicator.classList.add('loaded');
+						
+						// 3秒后隐藏指示器
+						setTimeout(() => {
+							indicator.style.opacity = '0';
 							setTimeout(() => {
-								document.body.classList.remove('page-transition');
+								indicator.style.display = 'none';
 							}, 300);
+						}, 3000);
+					}
+					
+					// 重新应用内容可见性以使用新字体
+					if (this.contentVisible) {
+						document.body.classList.remove('content-visible');
+						// 使用requestAnimationFrame确保平滑过渡
+						requestAnimationFrame(() => {
+							document.body.classList.add('content-visible');
+						});
+					}
+				},
+				
+				// 设置页面导航
+				setupNavigation() {
+					const navLinks = document.querySelectorAll('nav a');
+					
+					navLinks.forEach(link => {
+						link.addEventListener('click', (e) => {
+							// 如果是外部链接，不处理过渡
+							if (link.getAttribute('target') === '_blank') return;
+							
+							const href = link.getAttribute('href');
+							if (!href || href.startsWith('#')) return;
+							
+							e.preventDefault();
+							
+							// 开始页面过渡
+							document.body.classList.add('page-transitioning');
+							
+							// 延迟导航以允许过渡动画完成
+							setTimeout(() => {
+								window.location.href = href;
+							}, 250);
 						});
 					});
 				}
 			};
 
-			// 初始化页面管理器
-			PageManager.init();
+			// 页面加载完成后初始化
+			if (document.readyState === 'loading') {
+				document.addEventListener('DOMContentLoaded', () => AppManager.init());
+			} else {
+				AppManager.init();
+			}
 		</script>
 	</body>
 </html>
