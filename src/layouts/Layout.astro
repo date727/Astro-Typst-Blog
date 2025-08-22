@@ -7,7 +7,7 @@
 		<meta name="generator" content={Astro.generator} />
 		<title><slot name="title" /></title>
 
-		<!-- 全局字体预加载，只加载一次 -->
+		<!-- 全局字体预加载 -->
 		<link 
 			rel="preload" 
 			href="/fonts/consola-1.woff2"
@@ -17,34 +17,43 @@
 		/>
 
 		<style>
-			/* 全局字体声明，确保只定义一次 */
+			/* 全局字体声明 - 使用block策略确保字体加载前不显示内容 */
 			@font-face {
 				font-family: 'MyConsola';
 				src: url('/fonts/consola-1.woff2') format('woff2');
 				font-weight: normal;
 				font-style: normal;
-				font-display: swap; /* 关键优化：使用 swap 策略 */
+				font-display: block; /* 关键修改：使用block策略 */
 			}
 
 			/* 基础样式与动画变量 */
 			:root {
 				--transition-speed: 0.3s;
 				--content-delay: 0.1s;
-				--font-loaded: false; /* 字体加载状态变量 */
 			}
 
 			body {
 				margin: 0;
 				background-color: #fafaf0;
-				/* 使用字体栈，确保在字体加载前有后备字体 */
-				font-family: 'MyConsola', Consolas, 'Courier New', monospace;
-				/* 初始状态：隐藏内容直到字体加载完成 */
-				visibility: hidden;
+				/* 使用单一字体，避免字体栈切换 */
+				font-family: 'MyConsola', monospace;
+				/* 移除visibility隐藏，让内容始终可见 */
 			}
 
-			/* 字体加载完成后的状态 */
+			/* 字体加载期间的占位样式 */
+			.font-loading body {
+				/* 使用与目标字体相似的度量标准 */
+				font-family: 'Courier New', monospace;
+				/* 添加轻微的透明度过渡 */
+				opacity: 0.95;
+			}
+
+			/* 字体加载完成后的最终样式 */
 			.font-loaded body {
-				visibility: visible;
+				font-family: 'MyConsola', monospace;
+				opacity: 1;
+				/* 平滑过渡效果 */
+				transition: opacity 0.2s ease-in-out;
 			}
 
 			nav {
@@ -55,8 +64,6 @@
 				border-bottom: 1px solid rgb(0, 128, 128);
 				position: relative;
 				z-index: 10;
-				/* 导航栏始终可见，不受字体加载影响 */
-				visibility: visible;
 			}
 
 			nav a {
@@ -71,7 +78,7 @@
 				padding: 2rem;
 				max-width: 800px;
 				margin: 0 auto;
-				/* 初始隐藏状态 */
+				/* 初始状态 */
 				opacity: 0;
 				transform: translateY(10px);
 				/* 动画过渡 */
@@ -79,15 +86,12 @@
 					opacity var(--transition-speed) ease,
 					transform var(--transition-speed) ease;
 				transition-delay: var(--content-delay);
-				/* 确保主内容在字体加载完成后才可见 */
-				visibility: hidden;
 			}
 
-			/* 字体加载完成后显示内容的状态 */
-			.font-loaded main {
+			/* 页面加载完成后显示内容 */
+			.page-loaded main {
 				opacity: 1;
 				transform: translateY(0);
-				visibility: visible;
 			}
 
 			/* 页面切换时的动画状态 */
@@ -95,9 +99,36 @@
 				opacity: 0;
 				transform: translateY(10px);
 			}
+
+			/* 字体加载指示器（可选） */
+			.font-indicator {
+				position: fixed;
+				top: 10px;
+				right: 10px;
+				width: 8px;
+				height: 8px;
+				background-color: #ff6b6b;
+				border-radius: 50%;
+				opacity: 0;
+				transition: opacity 0.3s ease;
+				z-index: 1000;
+			}
+
+			.font-loading .font-indicator {
+				opacity: 1;
+			}
+
+			.font-loaded .font-indicator {
+				background-color: #51cf66;
+				opacity: 0;
+				transition: opacity 0.3s ease 0.5s;
+			}
 		</style>
 	</head>
-	<body>
+	<body class="font-loading">
+		<!-- 字体加载指示器 -->
+		<div class="font-indicator"></div>
+		
 		<nav>
 			<a href="/">Home</a>
 			<a href="/about/">About</a>
@@ -110,7 +141,7 @@
 		</main>
 
 		<script>
-			// 全局字体加载管理器
+			// 优化的字体加载管理器
 			const FontManager = {
 				isFontLoaded: false,
 				loadPromise: null,
@@ -122,67 +153,89 @@
 					if (!this.loadPromise) {
 						this.loadPromise = new Promise((resolve) => {
 							// 检查浏览器是否支持 FontFace API
-							if (document.fonts) {
-								// 检查字体是否已经加载
-								const font = new FontFace('MyConsola', 'url(/fonts/consola-1.woff2)');
-								
-								font.load().then((loadedFont) => {
-									document.fonts.add(loadedFont);
+							if (document.fonts && 'load' in document.fonts) {
+								// 使用document.fonts.load方法检查字体
+								document.fonts.load('1em MyConsola').then(() => {
 									this.isFontLoaded = true;
-									document.documentElement.classList.add('font-loaded');
+									this.updateFontState();
 									resolve();
 								}).catch(() => {
-									// 字体加载失败，使用后备字体
+									// 字体加载失败，仍然标记为已加载
 									console.warn('字体加载失败，使用后备字体');
 									this.isFontLoaded = true;
-									document.documentElement.classList.add('font-loaded');
+									this.updateFontState();
 									resolve();
 								});
 							} else {
 								// 不支持 FontFace API 的浏览器
 								setTimeout(() => {
 									this.isFontLoaded = true;
-									document.documentElement.classList.add('font-loaded');
+									this.updateFontState();
 									resolve();
-								}, 100);
+								}, 50); // 减少延迟时间
 							}
 						});
 					}
 					
 					return this.loadPromise;
+				},
+
+				// 更新字体状态
+				updateFontState() {
+					// 移除加载状态类，添加完成状态类
+					document.documentElement.classList.remove('font-loading');
+					document.documentElement.classList.add('font-loaded');
+					
+					// 触发页面内容动画
+					if (window.PageManager) {
+						window.PageManager.triggerContentAnimation();
+					}
 				}
 			};
 
 			// 页面加载和切换管理器
 			const PageManager = {
+				contentAnimationTriggered: false,
+				
 				init() {
+					// 将PageManager暴露到全局作用域
+					window.PageManager = this;
+					
 					// 初始化字体加载
 					FontManager.checkFontLoaded().then(() => {
-						// 字体加载完成后初始化页面
+						// 字体加载完成后设置页面过渡
 						this.setupPageTransitions();
 					});
 				},
 				
-				setupPageTransitions() {
-					// 页面DOM加载完成后触发
-					document.addEventListener('DOMContentLoaded', () => {
-						// 立即添加页面加载完成类，触发内容动画
+				// 触发内容动画
+				triggerContentAnimation() {
+					if (!this.contentAnimationTriggered) {
+						this.contentAnimationTriggered = true;
 						document.body.classList.add('page-loaded');
+					}
+				},
+				
+				setupPageTransitions() {
+					// 页面DOM加载完成后检查是否需要触发动画
+					document.addEventListener('DOMContentLoaded', () => {
+						// 如果字体已经加载，立即触发内容动画
+						if (FontManager.isFontLoaded) {
+							this.triggerContentAnimation();
+						}
 					});
 					
 					// 设置页面切换过渡
 					document.querySelectorAll('nav a').forEach(link => {
 						link.addEventListener('click', (e) => {
-							// 只有在字体已加载的情况下才执行过渡动画
-							if (FontManager.isFontLoaded) {
-								document.body.classList.remove('page-loaded');
-								document.body.classList.add('page-transition');
-								
-								// 确保过渡动画完成后再移除类
-								setTimeout(() => {
-									document.body.classList.remove('page-transition');
-								}, 300);
-							}
+							// 执行页面切换动画
+							document.body.classList.remove('page-loaded');
+							document.body.classList.add('page-transition');
+							
+							// 确保过渡动画完成
+							setTimeout(() => {
+								document.body.classList.remove('page-transition');
+							}, 300);
 						});
 					});
 				}
