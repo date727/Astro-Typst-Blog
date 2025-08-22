@@ -7,7 +7,7 @@
 		<meta name="generator" content={Astro.generator} />
 		<title><slot name="title" /></title>
 
-		<!-- 保留字体预加载 -->
+		<!-- 全局字体预加载，只加载一次 -->
 		<link 
 			rel="preload" 
 			href="/fonts/consola-1.woff2"
@@ -17,25 +17,34 @@
 		/>
 
 		<style>
-			/* 声明自定义字体 */
+			/* 全局字体声明，确保只定义一次 */
 			@font-face {
 				font-family: 'MyConsola';
 				src: url('/fonts/consola-1.woff2') format('woff2');
 				font-weight: normal;
 				font-style: normal;
+				font-display: swap; /* 关键优化：使用 swap 策略 */
 			}
 
 			/* 基础样式与动画变量 */
 			:root {
 				--transition-speed: 0.3s;
 				--content-delay: 0.1s;
+				--font-loaded: false; /* 字体加载状态变量 */
 			}
 
 			body {
 				margin: 0;
 				background-color: #fafaf0;
-				/* 直接使用目标字体，预加载会提升加载速度 */
-				font-family: 'MyConsola', Consolas, monospace;
+				/* 使用字体栈，确保在字体加载前有后备字体 */
+				font-family: 'MyConsola', Consolas, 'Courier New', monospace;
+				/* 初始状态：隐藏内容直到字体加载完成 */
+				visibility: hidden;
+			}
+
+			/* 字体加载完成后的状态 */
+			.font-loaded body {
+				visibility: visible;
 			}
 
 			nav {
@@ -46,6 +55,8 @@
 				border-bottom: 1px solid rgb(0, 128, 128);
 				position: relative;
 				z-index: 10;
+				/* 导航栏始终可见，不受字体加载影响 */
+				visibility: visible;
 			}
 
 			nav a {
@@ -68,12 +79,15 @@
 					opacity var(--transition-speed) ease,
 					transform var(--transition-speed) ease;
 				transition-delay: var(--content-delay);
+				/* 确保主内容在字体加载完成后才可见 */
+				visibility: hidden;
 			}
 
-			/* 页面加载完成后显示内容的状态 */
-			.page-loaded main {
+			/* 字体加载完成后显示内容的状态 */
+			.font-loaded main {
 				opacity: 1;
 				transform: translateY(0);
+				visibility: visible;
 			}
 
 			/* 页面切换时的动画状态 */
@@ -96,29 +110,86 @@
 		</main>
 
 		<script>
-			// 页面加载完成后直接触发内容动画（不依赖字体加载检测）
-			(function() {
-				// 页面DOM加载完成后触发
-				document.addEventListener('DOMContentLoaded', () => {
-					// 立即添加页面加载完成类，触发内容动画
-					document.body.classList.add('page-loaded');
-				});
+			// 全局字体加载管理器
+			const FontManager = {
+				isFontLoaded: false,
+				loadPromise: null,
+				
+				// 检查字体是否已加载
+				checkFontLoaded() {
+					if (this.isFontLoaded) return Promise.resolve();
+					
+					if (!this.loadPromise) {
+						this.loadPromise = new Promise((resolve) => {
+							// 检查浏览器是否支持 FontFace API
+							if (document.fonts) {
+								// 检查字体是否已经加载
+								const font = new FontFace('MyConsola', 'url(/fonts/consola-1.woff2)');
+								
+								font.load().then((loadedFont) => {
+									document.fonts.add(loadedFont);
+									this.isFontLoaded = true;
+									document.documentElement.classList.add('font-loaded');
+									resolve();
+								}).catch(() => {
+									// 字体加载失败，使用后备字体
+									console.warn('字体加载失败，使用后备字体');
+									this.isFontLoaded = true;
+									document.documentElement.classList.add('font-loaded');
+									resolve();
+								});
+							} else {
+								// 不支持 FontFace API 的浏览器
+								setTimeout(() => {
+									this.isFontLoaded = true;
+									document.documentElement.classList.add('font-loaded');
+									resolve();
+								}, 100);
+							}
+						});
+					}
+					
+					return this.loadPromise;
+				}
+			};
 
-				// 页面切换动画逻辑
-				document.querySelectorAll('nav a').forEach(link => {
-					link.addEventListener('click', function(e) {
-						// 添加入场动画状态
-						document.body.classList.remove('page-loaded');
-						document.body.classList.add('page-transition');
-						
-						// 延迟跳转，等待动画完成
-						setTimeout(() => {
-							document.body.classList.remove('page-transition');
-							// 实际项目中这里会是路由跳转逻辑
-						}, 300);
+			// 页面加载和切换管理器
+			const PageManager = {
+				init() {
+					// 初始化字体加载
+					FontManager.checkFontLoaded().then(() => {
+						// 字体加载完成后初始化页面
+						this.setupPageTransitions();
 					});
-				});
-			})();
+				},
+				
+				setupPageTransitions() {
+					// 页面DOM加载完成后触发
+					document.addEventListener('DOMContentLoaded', () => {
+						// 立即添加页面加载完成类，触发内容动画
+						document.body.classList.add('page-loaded');
+					});
+					
+					// 设置页面切换过渡
+					document.querySelectorAll('nav a').forEach(link => {
+						link.addEventListener('click', (e) => {
+							// 只有在字体已加载的情况下才执行过渡动画
+							if (FontManager.isFontLoaded) {
+								document.body.classList.remove('page-loaded');
+								document.body.classList.add('page-transition');
+								
+								// 确保过渡动画完成后再移除类
+								setTimeout(() => {
+									document.body.classList.remove('page-transition');
+								}, 300);
+							}
+						});
+					});
+				}
+			};
+
+			// 初始化页面管理器
+			PageManager.init();
 		</script>
 	</body>
 </html>
