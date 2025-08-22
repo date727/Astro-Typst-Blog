@@ -7,25 +7,20 @@ posts.sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf());
 
 <Layout>
   <h1 slot="title">博客列表 - Astro 学习之旅</h1>
-  <h1>我的博客</h1>
-  <p>我正在学习 Astro 的入门教程。这是我的博客页面。</p>
-  <p>在这里，我将分享我的 Astro 学习之旅。</p>
+  <h1 class="text-4xl font-bold mb-6">我的博客</h1>
+  <p class="mb-4">我正在学习 Astro 的入门教程。这是我的博客页面。</p>
+  <p class="mb-6">在这里，我将分享我的 Astro 学习之旅。</p>
 
-  {posts.length === 0 && <p>暂无文章，快去 src/pages/blog/ 新建第一篇 Typst 博客吧！</p>}
+  {posts.length === 0 && <p class="text-gray-600 italic">暂无文章，快去 src/pages/blog/ 新建第一篇 Typst 博客吧！</p>}
 
   <!-- 文章列表：标题 + 日期 + "阅读全文"按钮 -->
-  <ul>
+  <ul class="list-none p-0">
     {posts.map(post => (
-      <li>
-        <h2>{post.data.title}</h2>
-        <time>{post.data.date.toLocaleDateString()}</time>
-        <br />
-        <a href={`/blog/${post.id}/`}>阅读全文 →</a>
+      <li class="mb-4">
+        <h2 class="text-2xl font-semibold mb-2">{post.data.title}</h2>
+        <time class="text-gray-600 block mb-2">{post.data.date.toLocaleDateString()}</time>
+        <a href={`/blog/${post.id}/`} class="inline-block text-teal-600 hover:text-teal-700 font-medium transition-colors duration-200">阅读全文 →</a>
       </li>
     ))}
   </ul>
-  <style>
-    ul { list-style: none; padding: 0; }
-    li { margin: 0.5rem 0; }
-  </style>
 </Layout>

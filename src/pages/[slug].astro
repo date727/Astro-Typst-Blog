@@ -10,21 +10,22 @@ export async function getStaticPaths() {
   }));
 }
 
-
 const { post } = Astro.props;
 const { Content } = await render(post);
 ---
 
 <Layout>
   <h1 slot="title">{post.data.title}</h1>
-  <nav>
-    <a href="/">首页</a>
-    <a href="/blog/">← 返回列表</a>
+  <nav class="px-4 py-4 max-w-2xl mx-auto border-b border-teal-600 mb-6">
+    <a href="/" class="nav-link">首页</a>
+    <a href="/blog/" class="nav-link">← 返回列表</a>
   </nav>
 
-  <article>
-    <h1>{post.data.title}</h1>
-    <time>{post.data.date.toLocaleDateString()}</time>
-    <Content />
+  <article class="article-content">
+    <h1 class="article-title">{post.data.title}</h1>
+    <time class="article-date">{post.data.date.toLocaleDateString()}</time>
+    <div class="prose prose-lg max-w-none bg-transparent">
+      <Content />
+    </div>
   </article>
 </Layout>

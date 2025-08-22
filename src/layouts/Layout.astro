@@ -1,3 +1,7 @@
+---
+import '../styles/global.css'
+---    
+
 <!doctype html>
 <html lang="zh-cn">
 	<head>
@@ -6,134 +10,20 @@
 		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
 		<meta name="generator" content={Astro.generator} />
 		<title><slot name="title" /></title>
-
-		<style>
-			/* 基础样式设置 */
-			:root {
-				--transition-speed: 0.25s;
-				--content-delay: 0.05s;
-			}
-			body {
-				margin: 0;
-				background-color: #fafaf0;
-				font-family: 'Courier New', monospace;
-				visibility: visible;
-				opacity: 1;
-			}
-			nav {
-				padding: 1.5rem 1rem;
-				max-width: 800px;
-				margin: 0 auto;
-				text-align: right;
-				border-bottom: 1px solid rgb(0, 128, 128);
-				position: relative;
-				z-index: 10;
-			}
-			nav a {
-				margin-right: 1rem;
-				text-decoration: none;
-				font-weight: bold;
-				color: #333;
-				transition: color 0.2s ease;
-				font-family: inherit;
-			}
-			nav a:hover {
-				color: rgb(0, 128, 128);
-			}
-			/* 主内容区域样式 */
-			main {
-				padding: 2rem;
-				max-width: 800px;
-				margin: 0 auto;
-				font-family: 'Courier New', monospace;
-				/* 初始状态 */
-				opacity: 0;
-				transform: translateY(8px);
-				/* 平滑过渡 */
-				transition: 
-					opacity var(--transition-speed) cubic-bezier(0.4, 0, 0.2, 1),
-					transform var(--transition-speed) cubic-bezier(0.4, 0, 0.2, 1);
-				transition-delay: var(--content-delay);
-			}
-
-			/* 页面内容显示状态 */
-			.content-visible main {
-				opacity: 1;
-				transform: translateY(0);
-			}
-
-			/* 页面切换时的过渡状态 */
-			.page-transitioning main {
-				opacity: 0;
-				transform: translateY(-8px);
-			}
-		</style>
+		
+		<!-- Tailwind CSS -->
+		<script src="https://cdn.tailwindcss.com"></script>
 	</head>
-	<body>
-		<nav>
-			<a href="/">Home</a>
-			<a href="/about/">About</a>
-			<a href="/blog/">Blog</a>
-			<a href="/comments">Comment</a>
+	<body class="m-0 bg-[#fafaf0] font-mono font-normal">
+		<nav class="px-4 py-6 max-w-2xl mx-auto text-right border-b border-teal-600 relative z-10">
+			<a href="/" class="mr-4 no-underline font-bold text-gray-800 hover:text-teal-600 transition-colors duration-200">Home</a>
+			<a href="/about/" class="mr-4 no-underline font-bold text-gray-800 hover:text-teal-600 transition-colors duration-200">About</a>
+			<a href="/blog/" class="mr-4 no-underline font-bold text-gray-800 hover:text-teal-600 transition-colors duration-200">Blog</a>
+			<a href="/comments" class="no-underline font-bold text-gray-800 hover:text-teal-600 transition-colors duration-200">Comment</a>
 		</nav>
 
-		<main>
+		<main class="px-8 py-8 max-w-2xl mx-auto font-mono">
 			<slot />
 		</main>
-
-		<script>
-			// 简化的页面管理器
-			const PageManager = {
-				contentVisible: false,
-				
-				init() {
-					// 立即显示内容
-					this.showContent();
-					
-					// 设置页面导航
-					this.setupNavigation();
-				},
-				
-				// 立即显示内容
-				showContent() {
-					if (!this.contentVisible) {
-						this.contentVisible = true;
-						document.body.classList.add('content-visible');
-					}
-				},
-				
-				// 设置页面导航
-				setupNavigation() {
-					const navLinks = document.querySelectorAll('nav a');
-					
-					navLinks.forEach(link => {
-						link.addEventListener('click', (e) => {
-							// 如果是外部链接，不处理过渡
-							if (link.getAttribute('target') === '_blank') return;
-							
-							const href = link.getAttribute('href');
-							if (!href || href.startsWith('#')) return;
-							
-							e.preventDefault();
-							
-							// 开始页面过渡
-							document.body.classList.add('page-transitioning');
-							
-							// 延迟导航以允许过渡动画完成
-							setTimeout(() => {
-								window.location.href = href;
-							}, 250);
-						});
-					});
-				}
-			};
-
-			// 页面加载完成后初始化
-			if (document.readyState === 'loading') {
-				document.addEventListener('DOMContentLoaded', () => PageManager.init());
-			} else {
-				PageManager.init();
-			}
-		</script>
 	</body>
 </html>
