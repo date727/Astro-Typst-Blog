@@ -7,7 +7,7 @@
 		<meta name="generator" content={Astro.generator} />
 		<title><slot name="title" /></title>
 
-		<!-- 1. 预加载字体（优先加载关键字体文件） -->
+		<!-- 预加载字体 -->
 		<link 
 			rel="preload" 
 			href="/fonts/consola-1.woff2"
@@ -17,50 +17,130 @@
 		/>
 
 		<style>
-			/* 2. 声明自定义字体，关联文件与名称 */
+			/* 声明自定义字体 */
 			@font-face {
-				font-family: 'MyConsola'; /* 自定义名称，避免与系统字体冲突 */
-				src: url('/fonts/consola-1.woff2') format('woff2'),  /* 现代浏览器优先 */
-					 url('/fonts/consola-1.ttf') format('truetype'); /* 降级格式 */
-				font-weight: normal; /* 根据实际字体设置 */
+				font-family: 'MyConsola';
+				src: url('/fonts/consola-1.woff2') format('woff2');
+				font-weight: normal;
 				font-style: normal;
+			}
+
+			/* 基础样式与动画变量 */
+			:root {
+				--transition-speed: 0.3s;
+				--content-delay: 0.1s; /* 内容动画延迟，增强层次感 */
 			}
 
 			body {
 				margin: 0;
 				background-color: #fafaf0;
-				font-family: 'MyConsola', Consolas, monospace; /* 优先级：自定义字体 > 系统Consolas > 通用等宽字体 */
+				font-family: Consolas, monospace;
 			}
 
+			/* 导航栏保持固定，不参与动画 */
 			nav {
 				padding: 1.5rem 1rem;
 				max-width: 800px;
 				margin: 0 auto;
 				text-align: right;
 				border-bottom: 1px solid rgb(0, 128, 128);
+				/* 固定导航栏样式，避免页面切换时晃动 */
+				position: relative;
+				z-index: 10;
 			}
+
 			nav a {
 				margin-right: 1rem;
 				text-decoration: none;
 				font-weight: bold;
 				color: #333;
 			}
+
+			/* 主内容区域动画容器 */
+			.content-wrapper {
+				/* 字体切换过渡 */
+				font-family: Consolas, monospace;
+				transition: font-family var(--transition-speed) step-end;
+			}
+
+			/* 主内容动态效果 */
 			main {
 				padding: 2rem;
 				max-width: 800px;
 				margin: 0 auto;
+				/* 内容初始状态 */
+				opacity: 0;
+				transform: translateY(10px);
+				transition: 
+					opacity var(--transition-speed) ease,
+					transform var(--transition-speed) ease;
+				transition-delay: var(--content-delay);
+			}
+
+			/* 字体加载完成后状态 */
+			.font-loaded {
+				font-family: 'MyConsola', Consolas, monospace;
+			}
+
+			/* 内容加载完成动画 */
+			.font-loaded main {
+				opacity: 1;
+				transform: translateY(0);
+			}
+
+			/* 页面切换时的临时状态（可配合前端路由使用） */
+			.page-transition main {
+				opacity: 0;
+				transform: translateY(10px);
 			}
 		</style>
 	</head>
 	<body>
+		<!-- 导航栏保持固定，不参与动画 -->
 		<nav>
 			<a href="/">Home</a>
 			<a href="/about/">About</a>
 			<a href="/blog/">Blog</a>
 			<a href="/comments">Comment</a>
 		</nav>
-		<main>
-			<slot />
-		</main>
+
+		<!-- 内容区域包裹器，用于字体切换 -->
+		<div class="content-wrapper">
+			<!-- 主内容区域，仅这里有动画 -->
+			<main>
+				<slot />
+			</main>
+		</div>
+
+		<script>
+			// 检测字体加载完成后触发内容动画
+			(function() {
+				// 添加字体加载完成状态
+				function activateFont() {
+					document.body.classList.add('font-loaded');
+					document.querySelector('.content-wrapper').classList.add('font-loaded');
+				}
+
+				if (document.fonts) {
+					// 精确等待自定义字体加载
+					document.fonts.load('1em "MyConsola"').then(activateFont).catch(activateFont);
+				} else {
+					// 降级方案：延迟触发动画
+					setTimeout(activateFont, 300);
+				}
+
+				// 页面切换动画（如果使用前端路由，可在这里监听路由变化）
+				document.querySelectorAll('nav a').forEach(link => {
+					link.addEventListener('click', function(e) {
+						// 模拟页面切换前的动画（实际项目中需配合路由拦截）
+						document.body.classList.add('page-transition');
+						// 延迟跳转，等待动画完成
+						setTimeout(() => {
+							document.body.classList.remove('page-transition');
+						}, 300);
+					});
+				});
+			})();
+		</script>
 	</body>
 </html>
