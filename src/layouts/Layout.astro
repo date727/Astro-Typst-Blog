@@ -1,5 +1,8 @@
 ---
 import '../styles/global.css'
+import '@fontsource/roboto-mono/400.css';
+import robotoMonoWoff2 from '@fontsource/roboto-mono/files/roboto-mono-latin-400-normal.woff2?url';
+import robotoMonoWoff from '@fontsource/roboto-mono/files/roboto-mono-latin-400-normal.woff?url';
 ---    
 
 <!doctype html>
@@ -11,8 +14,9 @@ import '../styles/global.css'
 		<meta name="generator" content={Astro.generator} />
 		<title><slot name="title" /></title>
 		
-		<!-- Tailwind CSS -->
-		<script src="https://cdn.tailwindcss.com"></script>
+		<!-- 预加载Roboto Mono字体 -->
+		<link rel="preload" href={robotoMonoWoff2} as="font" type="font/woff2" crossorigin="anonymous" />
+		<link rel="preload" href={robotoMonoWoff} as="font" type="font/woff" crossorigin="anonymous" />
 	</head>
 	<body class="m-0 bg-[#fafaf0] font-mono font-normal">
 		<nav class="px-4 py-6 max-w-2xl mx-auto text-right border-b border-teal-600 relative z-10">
@@ -21,7 +25,7 @@ import '../styles/global.css'
 			<a href="/blog/" class="mr-4 no-underline font-bold text-gray-800 hover:text-teal-600 transition-colors duration-200">Blog</a>
 			<a href="/comments" class="no-underline font-bold text-gray-800 hover:text-teal-600 transition-colors duration-200">Comment</a>
 		</nav>
-
+		
 		<main class="px-8 py-8 max-w-2xl mx-auto font-mono">
 			<slot />
 		</main>

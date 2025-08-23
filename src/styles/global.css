@@ -1,1 +1,5 @@
 @import "tailwindcss";
+@theme {
+  --font-mono: "Roboto Mono", "Consolas", "Monaco", monospace;
+  --font-sans: "Roboto Mono", "Inter", system-ui, sans-serif;
+}
