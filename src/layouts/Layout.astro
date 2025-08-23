@@ -6,6 +6,8 @@ import '@fontsource/jetbrains-mono/800.css';
 import jetbrainsMonoExtraBoldWoff2 from '@fontsource/jetbrains-mono/files/jetbrains-mono-latin-800-normal.woff2?url';
 import '@fontsource/caveat/400.css';
 import caveatWoff2 from '@fontsource/caveat/files/caveat-latin-400-normal.woff2?url';
+
+const { title } = Astro.props;
 ---    
 
 <!doctype html>
@@ -15,7 +17,7 @@ import caveatWoff2 from '@fontsource/caveat/files/caveat-latin-400-normal.woff2?
 		<meta name="viewport" content="width=device-width" />
 		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
 		<meta name="generator" content={Astro.generator} />
-		<title><slot name="title" /></title>
+		<title>{title}</title>
 		
 		<!-- 预加载字体 -->
 		<link rel="preload" href={jetbrainsMonoLightWoff2} as="font" type="font/woff2" crossorigin="anonymous" />
@@ -39,6 +41,7 @@ import caveatWoff2 from '@fontsource/caveat/files/caveat-latin-400-normal.woff2?
 		</nav>
 		
 		<main class="px-8 py-8 max-w-3xl mx-auto font-mono">
+			<slot name="heading" />
 			<slot />
 		</main>
 	</body>
