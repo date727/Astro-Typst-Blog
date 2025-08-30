@@ -1,9 +1,4 @@
-#import "@preview/oxifmt:0.2.0": strfmt   // 随便用包
-
-#set text(
-  font: ("FangSong_GB2312"),
-  lang: "zh"
-)
+#import "@preview/oxifmt:0.2.0": strfmt
 
 #metadata(
   (
@@ -13,9 +8,11 @@
   )
 )<frontmatter>
 
-= title
+#set page(fill: none, margin: 0pt)
 
-这是正文。下面是一段数学公式：
+= Hello Typst in Astro
+
+这是正文。下面是一段数学公式
 
 $ sum_(k=1)^n k = (n(n+1))/2 $
 

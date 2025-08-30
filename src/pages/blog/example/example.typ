@@ -2,11 +2,13 @@
 
 #metadata(
   (
-    title: "",
+    title: "Example",
     date:  "2025-08-20",
     tags:  (),
   )
 )<frontmatter>
+
+#set page(fill: none, margin: 0pt)
 
 = title
 
