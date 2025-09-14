@@ -13,4 +13,4 @@
 
 // 字体样式
 
-#let text-font = ("Times New Roman","SimSun")
+#let text-font = ("New Computer Modern","Noto Serif CJK SC")
