@@ -1,9 +1,36 @@
 ---
 import Layout from '../../layouts/Layout.astro';
 import Helloty from './hello/hello.typ?svg';
+
+const title = "Hello Typst in Astro";
+const date = new Date('2024-08-20');
 ---
-<Layout>
+<Layout title={title}>
+  <article class="max-w-3xl mx-auto">
+    <h1 
+      class="text-3xl font-bold mb-4 text-gray-900"
+      transition:name="blog-title-hello"
+    >
+      {title}
+    </h1>
+    
+    <time class="text-gray-600 block mb-6">
+      {date.toLocaleDateString('zh-CN', {
+        year: 'numeric',
+        month: 'long',
+        day: 'numeric'
+      })}
+    </time>
+    
     <div class="transform scale-[0.52] origin-top-left">
-        <Helloty />
+      <Helloty />
     </div>
+  </article>
 </Layout>
+
+<style>
+  ::view-transition-old(blog-title-hello),
+  ::view-transition-new(blog-title-hello) {
+    animation: titleMove 0.6s ease-in-out;
+  }
+</style>

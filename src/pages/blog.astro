@@ -44,7 +44,6 @@ posts.sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf());
 </Layout>
 
 <style>
-  /* 共享元素动画 */
   ::view-transition-old(blog-title-*),
   ::view-transition-new(blog-title-*) {
     animation: titleMove 0.6s ease-in-out;
@@ -61,7 +60,6 @@ posts.sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf());
     }
   }
 
-  /* 页面过渡动画 */
   ::view-transition-old(root) {
     animation: slideOut 0.4s ease-in-out;
   }

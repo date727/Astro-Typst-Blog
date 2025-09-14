@@ -10,7 +10,7 @@
 )<frontmatter>
 
 #set page(fill: none, margin: 0pt)
-#set text(font: text-font)
+#set text(font:("Noto Serif CJK SC"))
 
 #heading1[hello]
 

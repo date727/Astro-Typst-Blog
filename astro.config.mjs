@@ -11,7 +11,7 @@ export default defineConfig({
         remPx: 14,
       },
       fontArgs: [
-        { fontPaths: ['src/fonts'] },
+        { fontPaths: ['./src/fonts'] },
         { fontBlobs: [] }
       ],
       target: (id) => {
