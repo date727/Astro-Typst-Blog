@@ -6,7 +6,6 @@ import '@fontsource/jetbrains-mono/800.css';
 import jetbrainsMonoExtraBoldWoff2 from '@fontsource/jetbrains-mono/files/jetbrains-mono-latin-800-normal.woff2?url';
 import '@fontsource/caveat/400.css';
 import caveatWoff2 from '@fontsource/caveat/files/caveat-latin-400-normal.woff2?url';
-import { ViewTransitions } from 'astro:transitions';
 import Footer from '../components/Footer.astro';
 const { title, frontmatter } = Astro.props;
 ---    
@@ -19,12 +18,52 @@ const { title, frontmatter } = Astro.props;
 		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
 		<meta name="generator" content={Astro.generator} />
 		<title>{title}</title>
-		<ViewTransitions />
 		
 		<!-- 预加载字体 -->
 		<link rel="preload" href={jetbrainsMonoLightWoff2} as="font" type="font/woff2" crossorigin="anonymous" />
 		<link rel="preload" href={jetbrainsMonoExtraBoldWoff2} as="font" type="font/woff2" crossorigin="anonymous" />
 		<link rel="preload" href={caveatWoff2} as="font" type="font/woff2" crossorigin="anonymous" />
+		
+		<style>
+			@media (prefers-reduced-motion: no-preference) {
+				@view-transition {
+					navigation: auto;
+				}
+				
+				::view-transition-old(root),
+				::view-transition-new(root) {
+					animation: none;
+					mix-blend-mode: normal;
+				}
+				
+				::view-transition-old(root) {
+					z-index: 1;
+				}
+				
+				::view-transition-new(root) {
+					z-index: 9999;
+				}
+				
+				/* 淡入淡出动画 */
+				@keyframes fadeIn {
+					from { opacity: 0; }
+					to { opacity: 1; }
+				}
+				
+				@keyframes fadeOut {
+					from { opacity: 1; }
+					to { opacity: 0; }
+				}
+				
+				::view-transition-old(root) {
+					animation: 0.2s ease-out both fadeOut;
+				}
+				
+				::view-transition-new(root) {
+					animation: 0.2s ease-out 0.1s both fadeIn;
+				}
+			}
+		</style>
 	</head>
 	<body class="m-0 bg-[#fafaf0] font-mono font-normal">
 		<nav class="px-4 py-6 max-w-3xl mx-auto border-b border-teal-600 relative z-10 flex justify-between items-center">
