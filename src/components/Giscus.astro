@@ -1,11 +1,9 @@
 ---
 export interface Props {
-  /** 可选：手动指定 discussion key；留空则用 pathname */
   term?: string;
 }
 const { term } = Astro.props;
 ---
-
 <div id="giscus"></div>
 
 <script>

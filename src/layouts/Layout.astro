@@ -6,6 +6,7 @@ import '@fontsource/jetbrains-mono/800.css';
 import jetbrainsMonoExtraBoldWoff2 from '@fontsource/jetbrains-mono/files/jetbrains-mono-latin-800-normal.woff2?url';
 import '@fontsource/caveat/400.css';
 import caveatWoff2 from '@fontsource/caveat/files/caveat-latin-400-normal.woff2?url';
+import { ClientRouter } from "astro:transitions";
 import Footer from '../components/Footer.astro';
 const { title, frontmatter } = Astro.props;
 ---    
@@ -24,7 +25,9 @@ const { title, frontmatter } = Astro.props;
 		<link rel="preload" href={jetbrainsMonoExtraBoldWoff2} as="font" type="font/woff2" crossorigin="anonymous" />
 		<link rel="preload" href={caveatWoff2} as="font" type="font/woff2" crossorigin="anonymous" />
 		
+		<ClientRouter />
 		<style>
+			/* View Transitions 替代样式 */
 			@media (prefers-reduced-motion: no-preference) {
 				@view-transition {
 					navigation: auto;
