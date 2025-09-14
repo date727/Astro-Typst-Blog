@@ -1,9 +1,38 @@
 ---
 import Layout from '../../layouts/Layout.astro';
 import Helloty from './example/example.typ?svg';
+
+const title = "Example in Typst";
+const date = new Date('2024-01-02');
 ---
-<Layout>
+
+<Layout title={title}>
+  <article class="max-w-3xl mx-auto">
+    <h1 
+      class="text-3xl font-bold mb-4 text-gray-900"
+      transition:name="blog-title-example"
+    >
+      {title}
+    </h1>
+    
+    <time class="text-gray-600 block mb-6">
+      {date.toLocaleDateString('zh-CN', {
+        year: 'numeric',
+        month: 'long',
+        day: 'numeric'
+      })}
+    </time>
+    
     <div class="transform scale-[0.52] origin-top-left">
-        <Helloty />
+      <Helloty />
     </div>
+  </article>
 </Layout>
+
+<style>
+  /* 共享元素动画支持 */
+  ::view-transition-old(blog-title-example),
+  ::view-transition-new(blog-title-example) {
+    animation: titleMove 0.6s ease-in-out;
+  }
+</style>

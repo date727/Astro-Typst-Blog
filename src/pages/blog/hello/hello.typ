@@ -1,4 +1,5 @@
 #import "@preview/oxifmt:0.2.0": strfmt
+#import "../../../lib.typ": *
 
 #metadata(
   (
@@ -9,16 +10,20 @@
 )<frontmatter>
 
 #set page(fill: none, margin: 0pt)
+#set text(font: text-font)
 
-= Hello Typst in Astro
+#heading1[hello]
 
-这是正文。下面是一段数学公式
+纪念科研成功的一天。
 
-$ sum_(k=1)^n k = (n(n+1))/2 $
+这是正文内容，使用了统一的字体大小规范。
 
-#table(
-  columns: 2,
-  [*语言*], [*特点*],
-  [Typst],  [排版优雅],
-  [Astro],  [静态站点],
-)
+#heading2[Second]
+
+这里是二级标题的内容。
+
+#heading3[Third]
+
+这里是三级标题的内容。
+
+如果还需要别的标题字体，可以在lib.typ文件中修改`title-sizes`。

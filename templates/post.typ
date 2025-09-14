@@ -8,6 +8,6 @@
   )
 )<frontmatter>
 
-= title
+#set page(fill: none, margin: 0pt)
 
 正文从这里开始……

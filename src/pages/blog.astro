@@ -8,21 +8,83 @@ posts.sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf());
 <Layout title="Blog">
   <h1 slot="heading" class="text-4xl font-bold mb-6">我的博客</h1>
   <p class="mb-4">我正在学习 Astro 的入门教程。这是我的博客页面。</p>
-  <p class="mb-6">在这里，我将分享我的 Astro 学习之旅。</p>
+  <p class="mb-8">在这里，我将分享我的 Astro 学习之旅。</p>
 
   {posts.length === 0 && <p class="text-gray-600 italic">暂无文章，快去 src/pages/blog/ 新建第一篇 Typst 博客吧！</p>}
 
-  <!-- 文章列表：标题 + 日期 + "阅读全文"按钮 -->
-  <ul class="list-none p-0">
+  <!-- 文章列表 -->
+  <ul class="list-none p-0 space-y-6">
     {posts.map(post => {
       const shortId = post.id.split('/')[0];
       return (
-        <li class="mb-4">
-          <h2 class="text-2xl font-semibold mb-2">{post.data.title}</h2>
-          <time class="text-gray-600 block mb-2">{post.data.date.toLocaleDateString()}</time>
-          <a href={`/blog/${shortId}`} class="inline-block text-teal-600 hover:text-teal-700 font-medium transition-colors duration-200">阅读全文 →</a>
+        <li class="border-b border-gray-200 pb-6 last:border-b-0">
+          <a 
+            href={`/blog/${shortId}`} 
+            class="group block"
+            data-astro-prefetch="hover"
+          >
+            <h2 
+              class="text-2xl font-semibold mb-2 text-gray-900 group-hover:text-teal-600 transition-colors duration-200"
+              transition:name={`blog-title-${shortId}`}
+            >
+              {post.data.title}
+            </h2>
+            <time class="text-gray-500 text-sm block">
+              {post.data.date.toLocaleDateString('zh-CN', {
+                year: 'numeric',
+                month: 'long',
+                day: 'numeric'
+              })}
+            </time>
+          </a>
         </li>
       );
     })}
   </ul>
 </Layout>
+
+<style>
+  /* 共享元素动画 */
+  ::view-transition-old(blog-title-*),
+  ::view-transition-new(blog-title-*) {
+    animation: titleMove 0.6s ease-in-out;
+  }
+
+  @keyframes titleMove {
+    from {
+      opacity: 0.8;
+      transform: translateY(20px) scale(0.8);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0) scale(1);
+    }
+  }
+
+  /* 页面过渡动画 */
+  ::view-transition-old(root) {
+    animation: slideOut 0.4s ease-in-out;
+  }
+
+  ::view-transition-new(root) {
+    animation: slideIn 0.4s ease-in-out;
+  }
+
+  @keyframes slideOut {
+    to {
+      opacity: 0;
+      transform: translateX(-100%);
+    }
+  }
+
+  @keyframes slideIn {
+    from {
+      opacity: 0;
+      transform: translateX(100%);
+    }
+    to {
+      opacity: 1;
+      transform: translateX(0);
+    }
+  }
+</style>
