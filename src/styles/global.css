@@ -1,7 +1,6 @@
 @import "tailwindcss";
 
 @theme {
-  --font-mono: "JetBrains Mono", "Consolas", "Monaco", monospace;
-  --font-sans: "JetBrains Mono", "Inter", system-ui, sans-serif;
-  --font-caveat: "Caveat", "Comic Sans MS", "Marker Felt", cursive;
+  --font-mono: "Fira Code", "JetBrains Mono", "Consolas", monospace;
+  --font-sans: "Playfair Display", "Georgia", serif;
 }

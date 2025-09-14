@@ -10,6 +10,8 @@
     "new": "node scripts/new-post.js"
   },
   "dependencies": {
+    "@fontsource-variable/fira-code": "^5.2.6",
+    "@fontsource-variable/playfair-display": "^5.2.7",
     "@fontsource/caveat": "^5.2.6",
     "@fontsource/jetbrains-mono": "^5.2.6",
     "@fontsource/roboto-mono": "^5.2.6",
