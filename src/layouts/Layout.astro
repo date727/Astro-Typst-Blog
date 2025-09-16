@@ -1,9 +1,6 @@
 ---
 import '../styles/global.css'
-import '@fontsource-variable/playfair-display';
-import playfairDisplayWoff2 from '@fontsource-variable/playfair-display/files/playfair-display-latin-wght-normal.woff2?url';
-import '@fontsource-variable/fira-code';
-import firaCodeWoff2 from '@fontsource-variable/fira-code/files/fira-code-latin-wght-normal.woff2?url';
+import notoSerifSC from '../fonts/Noto Serif CJK SC.otf?url';
 import { ClientRouter } from "astro:transitions";
 import { slide } from 'astro:transitions';
 import Footer from '../components/Footer.astro';
@@ -25,12 +22,11 @@ const navSlide = slide({
 		<title>{title}</title>
 		
 		<!-- 预加载字体 -->
-		<link rel="preload" href={playfairDisplayWoff2} as="font" type="font/woff2" crossorigin="anonymous" />
-		<link rel="preload" href={firaCodeWoff2} as="font" type="font/woff2" crossorigin="anonymous" />
+		<link rel="preload" href={notoSerifSC} as="font" type="font/otf" crossorigin="anonymous" />
 		
 		<ClientRouter />
 	</head>
-	<body class="m-0 bg-[#fafaf0] font-mono font-normal">
+	<body class="m-0 bg-[#fafaf0] font-serif font-normal">
 		<nav class="px-4 py-6 max-w-3xl mx-auto border-b border-teal-600 relative z-10 flex justify-between items-center">
 			<!-- 左侧博客标题使用 Fira Code -->
 			<span class="font-mono text-xl font-bold text-gray-800">

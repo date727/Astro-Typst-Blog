@@ -1,4 +1,5 @@
 #import "@preview/oxifmt:0.2.0": strfmt
+#import "../../../lib.typ": *
 
 #metadata(
   (
@@ -9,6 +10,7 @@
 )<frontmatter>
 
 #set page(fill: none, margin: 0pt)
+#set text(font:("Noto Serif CJK SC"))
 
 这篇博客用于展示示例。
 
