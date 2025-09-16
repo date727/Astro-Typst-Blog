@@ -9,7 +9,7 @@
 }
 
 @theme {
-  --font-mono: "Noto Serif CJK SC", "Noto Serif SC", serif;
-  --font-sans: "Noto Serif CJK SC", "Noto Serif SC", serif;
-  --font-serif: "Noto Serif CJK SC", "Noto Serif SC", serif;
+  --font-mono: "Noto Serif CJK SC", serif;
+  --font-sans: "Noto Serif CJK SC", serif;
+  --font-serif: "Noto Serif CJK SC", serif;
 }
