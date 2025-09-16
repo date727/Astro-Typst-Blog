@@ -1,6 +1,7 @@
 ---
 import '../styles/global.css'
-import notoSerifSC from '../fonts/Noto Serif CJK SC.otf?url';
+import '@fontsource-variable/noto-serif-sc';
+import notoserifscWoff2 from '@fontsource-variable/noto-serif-sc/files/noto-serif-sc-latin-wght-normal.woff2?url';
 import { ClientRouter } from "astro:transitions";
 import { slide } from 'astro:transitions';
 import Footer from '../components/Footer.astro';
@@ -22,7 +23,7 @@ const navSlide = slide({
 		<title>{title}</title>
 		
 		<!-- 预加载字体 -->
-		<link rel="preload" href={notoSerifSC} as="font" type="font/otf" crossorigin="anonymous" />
+		<link rel="preload" as="font" type="font/woff2" href={notoserifscWoff2} crossorigin="anonymous" />
 		
 		<ClientRouter />
 	</head>

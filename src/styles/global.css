@@ -1,15 +1,8 @@
 @import "tailwindcss";
-
-@font-face {
-  font-family: 'Noto Serif CJK SC';
-  src: url('../fonts/Noto Serif CJK SC.otf') format('opentype');
-  font-weight: normal;
-  font-style: normal;
-  font-display: swap;
-}
+@import "@fontsource-variable/noto-serif-sc";
 
 @theme {
-  --font-mono: "Noto Serif CJK SC", serif;
-  --font-sans: "Noto Serif CJK SC", serif;
-  --font-serif: "Noto Serif CJK SC", serif;
+  --font-mono: "Noto Serif SC", serif;
+  --font-sans: "Noto Serif SC", serif; 
+  --font-serif: "Noto Serif SC", serif;
 }
