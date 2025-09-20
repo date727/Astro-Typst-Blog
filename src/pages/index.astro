@@ -4,5 +4,35 @@ import Layout from '../layouts/Layout.astro';
 
 <Layout title="Astro">
   <h1 slot="heading" class="text-5xl font-extrabold mt-16">Astro-Typst</h1>
-  <p class="text-xl mt-9">This is a blog about Astro and Typst</p>
+  <p class="font-medium mt-9">
+    Thank you for visiting this still-developing blog website.The style of this blog is largely inspired by the{" "}
+    <a 
+      href="https://github.com/satnaing/astro-paper" 
+      target="_blank" 
+      rel="noopener noreferrer"
+      class="text-teal-600 hover:text-teal-800 underline"
+    >
+      AstroPaper  
+    </a>
+    .
+  </p>
+  <p class="font-medium mt-3">
+    {[
+      "Unlike other Astro blog frameworks, Astro-Typst uses Typst as the rendering engine.",
+      "Compared to Markdown, Typst provides more personalized typesetting capabilities.",
+    ].join('')}
+  </p>
+  <p class="font-medium mt-3">
+    {[
+      "Since the author is neither a professional front-end nor back-end developer, many features of this website are implemented in a rather cumbersome manner.",
+      "If you have any ideas, you can leave a message on the Comment page, or directly submit an Issue or PR on GitHub.",
+      "I will reply to you as soon as possible! 😊"
+    ].join('')}
+  </p>
+  <div class="font-bold mt-4 flex items-center gap-2">
+    <span>Project Repository:</span>
+    <a href="https://github.com/date727/Astro-Typst-Blog" target="_blank" rel="noopener noreferrer">
+      <img src="/github.png" alt="GitHub" class="w-7 h-7" />
+    </a>
+  </div>
 </Layout>
